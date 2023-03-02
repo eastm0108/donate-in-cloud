@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14.4" height="9.1" viewBox="0 0 14.4 9.1">
+    <defs>
+        <style>.a{fill:none;}.b{clip-path:url(#a);}.c{fill:#3db4d9;}</style>
+        <clipPath id="a">
+            <rect class="a" width="14.4" height="9.1"/>
+        </clipPath>
+    </defs>
+        <g class="b">
+            <!-- 自己修改箭頭方向 -->
+            <path class="c" d="M9.2,11.1,2,4.089,4.145,2,9.2,6.923,14.255,2,16.4,4.089Z" transform="translate(17, 11) rotate(180)"/>
+        </g>
+</svg>
