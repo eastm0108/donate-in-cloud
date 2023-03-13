@@ -25,7 +25,6 @@ const logout = async () => {};
     border-bottom: 1px solid $--color-primary;
     padding: 0 48px;
 
-    // 首頁樣式
     &.dashBoardNavbar {
         position: relative;
         height: 133px;

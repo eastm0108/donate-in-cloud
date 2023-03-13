@@ -17,6 +17,19 @@ pnpm install --shamefully-hoist
 
 Start the development server on http://localhost:3000
 
+開啟後面前只有兩個頁面
+抖內專案說明頁面
+
+```
+http://localhost:3000/project/{專案 ID}
+```
+
+抖內專案頁面
+
+```
+http://localhost:3000/donate/{專案 ID}
+```
+
 ```bash
 npm run dev
 ```

@@ -123,13 +123,13 @@ function clickMenu(menuName) {
     this.tabName = menuName;
 }
 
-onMounted(async () => {
-    fetchData();
-});
-
-// if (process.server) {
+// onMounted(async () => {
 //     fetchData();
-// }
+// });
+
+if (process.server) {
+    fetchData();
+}
 </script>
 
 <style lang="scss" scoped>
@@ -158,25 +158,20 @@ onMounted(async () => {
         margin-bottom: 10px;
     }
 }
-// 照片區
 .imgArea {
     box-sizing: border-box;
     height: 350px;
-    // display: flex;
-    // flex-direction: column;
     @media (max-width: 992px) {
         width: calc(100% + 49px + 49px);
         transform: translateX(-48px);
         height: 280px;
     }
 
-    // 大圖片
     .image {
         width: 100%;
         object-fit: contain;
     }
 
-    // 下方圖片清單
     .pictures {
         overflow: hidden;
         width: 100%;
@@ -192,7 +187,6 @@ onMounted(async () => {
         }
     }
 
-    // 下方圖片清單 - 單獨照片
     .picture {
         display: inline-block;
         height: 61px;
@@ -208,9 +202,7 @@ onMounted(async () => {
     }
 }
 
-// 資訊區
 .infoArea {
-    // 分類
     .taxonomy {
         margin: 0;
         color: $baseFont;
@@ -218,7 +210,6 @@ onMounted(async () => {
         margin-bottom: 19px;
     }
 
-    // 專案名稱
     .projectTitle {
         margin: 0;
         margin-bottom: 22px;
@@ -226,7 +217,6 @@ onMounted(async () => {
         color: $primary;
     }
 
-    // 描述
     .summary {
         margin: 0;
         color: $baseFont;
@@ -235,7 +225,6 @@ onMounted(async () => {
         margin-bottom: 28px;
     }
 
-    // 支持專案按鈕
     .donateBtn {
         margin: 0;
         margin-top: 10px;
@@ -245,7 +234,6 @@ onMounted(async () => {
         }
     }
 
-    // 查看捐款明細按鈕
     .donateDetailBtn {
         margin: 0;
     }
@@ -258,13 +246,11 @@ onMounted(async () => {
         margin-bottom: 20px;
     }
 
-    // 募款期限
     .fundraisingPeriod {
         font-size: 24px;
         margin-right: 58px;
     }
 
-    // 募款期限天數
     .remainingDays {
         font-size: 32px;
         font-weight: 700;
@@ -277,19 +263,16 @@ onMounted(async () => {
     @media (max-width: 475px) {
         display: none;
     }
-    // tab 樣式
     .el-tabs__item {
         width: 184px;
         text-align: center;
         font-size: 16px;
     }
 
-    // bar 樣式
     .el-tabs__active-bar {
         height: 8px;
     }
 
-    // tab 內容
     .el-tabs__content {
         display: inline-block;
         background-color: $menuBg;
@@ -300,7 +283,6 @@ onMounted(async () => {
     }
 }
 
-// 箭頭 icon
 .arrowIcon {
     position: absolute;
     width: 16px;

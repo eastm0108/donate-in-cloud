@@ -402,13 +402,13 @@ async function fetchData() {
     }
 }
 
-onMounted(() => {
-    fetchData();
-});
-
-// if (process.server) {
+// onMounted(() => {
 //     fetchData();
-// }
+// });
+
+if (process.server) {
+    fetchData();
+}
 </script>
 
 <style lang="scss" scoped>

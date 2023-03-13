@@ -34,17 +34,10 @@ const config = useRuntimeConfig();
 // });
 </script>
 <style lang="scss">
-// @import 'element-plus/dist/index.css';
-// @import 'element-plus/theme-chalk/src/index';
-
-// 修改 element ui button 樣式
 .el-button {
     width: 150px;
     height: 40px;
     font-weight: bold;
     font-size: 16px;
-}
-
-.el-button--primary {
 }
 </style>

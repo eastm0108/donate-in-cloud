@@ -52,9 +52,11 @@ export const useProjectStore = defineStore('project', () => {
             project.value = {};
 
             const { data, pending, error, refresh } = await useFetch(
-                `${config.public.apiBaseURL}/v1/project/${projectId}`,
+                `${config.public.apiServerBaseURL}/v1/project/${projectId}`,
                 { headers: { Authorization: `Bearer ${config.public.token}` } }
             );
+
+            console.error('取得專案錯誤', error.value);
 
             if (error?.value) {
                 const { status, title } = error?.value?.data;
