@@ -47,13 +47,13 @@ export const useProjectStore = defineStore('project', () => {
         }
     });
 
-    async function getProject(projectId) {
+    async function getProject(projectId, token) {
         try {
             project.value = {};
 
             const { data, pending, error, refresh } = await useFetch(
                 `${config.public.apiServerBaseURL}/v1/project/${projectId}`,
-                { headers: { Authorization: `Bearer ${config.public.token}` } }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             console.error('取得專案錯誤', error.value);

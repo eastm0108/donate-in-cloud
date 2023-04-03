@@ -102,14 +102,14 @@ function outDetail(type) {
 }
 
 function gotoDonatePage() {
-    router.push({ path: `/donate/${route.params.id}` });
+    router.push({ path: `/donate${route.query?.p}` });
 }
 
 async function fetchData() {
     try {
         loading.value = true;
         settings.changeLoading(true);
-        await store.getProject(route.params.id);
+        await store.getProject(route?.query?.p);
     } catch (error) {
         console.log('fetchData error', error);
     } finally {

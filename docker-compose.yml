@@ -7,3 +7,10 @@ services:
         volumes:
             - .:/app
         command: npm run start
+
+networks:
+    my-network:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.16.238.0/24

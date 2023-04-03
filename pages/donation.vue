@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PreviousBtn text="返回專案" :path="`/project/${route.params.id}`" />
+        <!-- <PreviousBtn text="返回專案" :path="`/project/${route.query?.p}`" /> -->
         <div v-if="showPage">
             <div class="cover">
                 <h2 class="title">{{ project.title }}</h2>
@@ -222,6 +222,16 @@ const notificationStore = useNotificationStore();
 const messageStore = useMessageStore();
 const { project, cover, showPage } = storeToRefs(store);
 const loading = ref(true);
+const liff = reactive({
+    api: null,
+});
+
+const lineUserId = ref('');
+const isClient = process.client;
+
+const title = ref('');
+const description = ref('');
+const coverImage = ref('');
 
 let form = reactive({
     name: '',
@@ -306,7 +316,11 @@ function changeCity() {
 }
 
 function cancel() {
-    router.push({ path: `/project/${route.params.id}` });
+    if (liff?.api?.closeWindow) {
+        liff.api.closeWindow();
+    } else {
+        router.push({ path: `/project?p=${route.query?.p}` });
+    }
 }
 
 async function confirm() {
@@ -343,6 +357,7 @@ async function confirm() {
             note: form.note,
             introducer: form.introducer,
             needReceipt: form.needReceipt,
+            lineUserId: lineUserId?.value,
             receipts: [
                 {
                     name: form.receiptName,
@@ -359,29 +374,64 @@ async function confirm() {
             ],
         };
 
-        const { data, error } = await useFetch(`${config.public.apiBaseURL}/v1/project/${route.params.id}/donation`, {
+        const { data, error } = await useFetch(`${config.public.apiBaseURL}/v1/project/${route.query?.p}/donation`, {
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${config.public.token}`,
+                Authorization: `Bearer ${route.query?.t}`,
             },
             method: 'POST',
             body: formData,
         });
 
         if (error?.value) {
-            notificationStore.addNotification({ type: 'error', message: '填寫資料失敗，請重新操作', seconds: 5 });
-            cancel();
-            return false;
+            if (liff?.api?.sendMessages) {
+                await liff.api.sendMessages([
+                    {
+                        type: 'text',
+                        text: `${error.value}`,
+                    },
+                ]);
+
+                liff.api.closeWindow();
+            } else {
+                notificationStore.addNotification({ type: 'error', message: '填寫資料失敗，請重新操作', seconds: 5 });
+
+                cancel();
+            }
         }
 
         if (data?.value) {
-            notificationStore.addNotification({ type: 'success', message: '資料填寫成功', seconds: 5 });
-            cancel();
-            return false;
+            if (liff?.api?.sendMessages) {
+                await liff.api.sendMessages([
+                    {
+                        type: 'text',
+                        text: `${data?.value?.message}`,
+                    },
+                ]);
+
+                liff.api.closeWindow();
+            } else {
+                notificationStore.addNotification({ type: 'success', message: `${data?.value?.message}`, seconds: 5 });
+
+                cancel();
+            }
         }
     } catch (error) {
         console.log('API 錯誤', error);
-        notificationStore.addNotification({ type: 'error', message: '填寫資料失敗，請重新操作', seconds: 5 });
+
+        if (liff?.api?.sendMessages) {
+            await liff.api.sendMessages([
+                {
+                    type: 'text',
+                    text: `${'填寫資料失敗，請重新操作'}`,
+                },
+            ]);
+
+            liff.api.closeWindow();
+        } else {
+            notificationStore.addNotification({ type: 'error', message: '填寫資料失敗，請重新操作', seconds: 5 });
+            cancel();
+        }
     }
 }
 
@@ -393,7 +443,10 @@ async function fetchData() {
     try {
         loading.value = true;
         settings.changeLoading(true);
-        await store.getProject(route.params.id);
+        await store.getProject(route.query?.p, route.query?.t);
+        title.value = project.value.title;
+        description.value = project?.value?.taxonomy + project?.value?.summary;
+        coverImage.value = project.value?.marquees[0]?.url ? project.value?.marquees[0]?.url : '';
     } catch (error) {
         console.log('fetchData error', error);
     } finally {
@@ -402,9 +455,50 @@ async function fetchData() {
     }
 }
 
-// onMounted(() => {
-//     fetchData();
-// });
+let lineProfile = reactive({
+    result: null,
+});
+
+// set the page SEO data to the <meta> tags
+useHead({
+    title: title,
+    description: description,
+    meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { hid: 'title', property: 'title', name: 'title', content: title },
+        { hid: 'description', property: 'description', name: 'description', content: description },
+        { hid: 'og:title', property: 'og:title', name: 'og:title', content: title },
+        { hid: 'og:description', property: 'og:description', name: 'og:description', content: description },
+        { hid: 'og:image', property: 'og:image', name: 'og:image', content: coverImage },
+        { hid: 'og:type', property: 'og:type', name: 'og:type', content: 'website' },
+        { hid: 'twitter:card', property: 'twitter:card', name: 'twitter:card', content: coverImage },
+        { hid: 'twitter:title', property: 'twitter:title', name: 'twitter:title', content: title },
+        {
+            hid: 'twitter:description',
+            property: 'twitter:description',
+            name: 'twitter:description',
+            content: description,
+        },
+        { hid: 'twitter:image', property: 'twitter:image', name: 'twitter:image', content: coverImage },
+    ],
+});
+
+onMounted(async () => {
+    if (isClient) {
+        const script = document.createElement('script');
+        script.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
+        script.async = true;
+        script.defer = true;
+        script.onload = async () => {
+            await window.liff.init({ liffId: config.public.LIFF_ID });
+            liff.api = window.liff;
+            lineProfile.result = await liff.api.getProfile();
+            lineUserId.value = lineProfile?.result?.userId ? lineProfile.result.userId : '';
+        };
+        document.head.appendChild(script);
+    }
+});
 
 if (process.server) {
     fetchData();

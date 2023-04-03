@@ -3,7 +3,7 @@
     "scripts": {
         "start": "nuxt dev",
         "build": "nuxt build",
-        "dev": "NODE_ENV=development nuxt dev",
+        "dev": "NODE_ENV=production nuxt dev",
         "generateDev": "NODE_ENV=development nuxt generate",
         "generateProd": "NODE_ENV=production nuxt generate",
         "preview": "nuxt preview",

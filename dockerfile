@@ -9,7 +9,6 @@ COPY package*.json ./
 
 # 安裝相依套件
 RUN npm install
-RUN npm install esbuild
 
 # 複製專案檔案
 COPY . .
