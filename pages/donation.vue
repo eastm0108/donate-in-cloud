@@ -61,7 +61,9 @@
                                             :key="index"
                                             :label="city"
                                             :value="index"
-                                        ></option>
+                                        >
+                                            {{ city }}
+                                        </option>
                                     </select>
                                     <select
                                         v-model="form.country"
@@ -76,7 +78,9 @@
                                             :key="index"
                                             :label="country"
                                             :value="index"
-                                        ></option>
+                                        >
+                                            {{ country }}
+                                        </option>
                                     </select>
                                 </div>
 
@@ -125,7 +129,9 @@
                                         :key="index"
                                         :label="donateMethod.title"
                                         :value="donateMethod.title"
-                                    ></option>
+                                    >
+                                        {{ donateMethod.title }}
+                                    </option>
                                 </select>
                             </el-form-item>
                             <!-- 捐款方式詳述 -->
