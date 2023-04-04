@@ -21,13 +21,13 @@ Start the development server on http://localhost:3000
 抖內專案說明頁面
 
 ```
-http://localhost:3000/project/{專案 ID}
+http://localhost:3000/project?？p={專案 ID}&t={token}
 ```
 
 抖內專案頁面
 
 ```
-http://localhost:3000/donate/{專案 ID}
+http://localhost:3000/donation？p={專案 ID}&t={token}
 ```
 
 ```bash
