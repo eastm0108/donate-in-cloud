@@ -160,12 +160,12 @@
                                 <el-input v-model="form.receiptName" class="baseInput" />
                             </el-form-item>
                             <el-form-item label="捐款日期" prop="date">
-                                <el-date-picker
+                                <input
+                                    class="timePicker"
                                     v-model="form.date"
                                     type="date"
                                     label="捐款日期"
                                     placeholder="選擇捐款日期"
-                                    label-position="left"
                                 />
                             </el-form-item>
                             <!-- 匯款帳號後五碼 -->
@@ -352,11 +352,12 @@ async function confirm() {
         const city = counties[form.city] ? counties[form.city] : '';
         const country = districtOptions.value[form.country] ? districtOptions.value[form.country] : '';
         const postalCode = districts[form.city][1][form.country] ? districts[form.city][1][form.country] : '';
+        const time = new Date(form.date).toISOString();
 
         // 組資料
         const formData = {
             name: form.name,
-            date: form.date,
+            date: time,
             amount: Number(form.amount),
             donateMethod: form.donateMethod,
             phone: form.phone,
@@ -743,5 +744,14 @@ if (process.server) {
             }
         }
     }
+}
+
+.timePicker {
+    width: 100%;
+    height: 40px;
+    border-radius: 4px;
+    background-color: #fff;
+    border: 1px solid #7e7e7e;
+    max-width: 310px;
 }
 </style>
