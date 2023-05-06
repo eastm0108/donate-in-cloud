@@ -50,13 +50,13 @@ export const useProjectStore = defineStore('project', () => {
     async function getProject(projectId, token) {
         try {
             project.value = {};
+            const apiServerBaseURL = config.public.HOST ? config.public.HOST : config.public.apiServerBaseURL;
+            const host = typeof window !== 'undefined' ? `${window.location.origin}/api` : apiServerBaseURL;
+            const api = config.public.apiBaseURL === '' ? host : config.public.apiBaseURL;
 
-            const { data, pending, error, refresh } = await useFetch(
-                `${config.public.apiServerBaseURL}/v1/project/${projectId}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            console.error('取得專案錯誤', error.value);
+            const { data, pending, error, refresh } = await useFetch(`${api}/v1/project/${projectId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
             if (error?.value) {
                 const { status, title } = error?.value?.data;
@@ -78,5 +78,33 @@ export const useProjectStore = defineStore('project', () => {
         }
     }
 
-    return { project, cover, getProject, showPage };
+    async function donate(projectId, token, formData) {
+        try {
+            const apiServerBaseURL = config.public.HOST ? config.public.HOST : config.public.apiServerBaseURL;
+            const host = typeof window !== 'undefined' ? `${window.location.origin}/api` : apiServerBaseURL;
+            const api = config.public.apiBaseURL === '' ? host : config.public.apiBaseURL;
+            const { data, error } = await useFetch(`${api}/v1/project/${projectId}/donation`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                method: 'POST',
+                body: formData,
+            });
+
+            return {
+                data: {
+                    value: { message: data?.value?.result },
+                },
+                error: {
+                    value: error?.value?.data?.message,
+                },
+            };
+        } catch (error) {
+            console.log('donate error', error);
+            return { data: null, error: { value: error } };
+        }
+    }
+
+    return { project, cover, getProject, showPage, donate };
 });

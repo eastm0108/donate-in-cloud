@@ -1,16 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
     css: ['@/styles/index.scss'],
     runtimeConfig: {
         public: {
-            apiBaseURL: process.env.NODE_ENV === 'production' ? 'http://apigateway:8080' : '/api',
-            apiServerBaseURL: 'http://apigateway:8080',
+            apiBaseURL: process.env.API_DOMAIN_URL,
             LIFF_ID: process.env.LIFF_ID,
+            HOST: process.env.HOST,
+            apiServerBaseURL: 'http://apigateway:8080',
         },
         private: {},
     },
     modules: [
         // ['@nuxtjs/tailwindcss'],
+        '@element-plus/nuxt',
         [
             '@pinia/nuxt',
             {
@@ -24,6 +27,7 @@ export default defineNuxtConfig({
             },
         ],
     ],
+    elementPlus: {},
     nitro: {
         devProxy: {
             '/api': {

@@ -1,210 +1,233 @@
 <template>
-    <div>
-        <!-- <PreviousBtn text="返回專案" :path="`/project/${route.query?.p}`" /> -->
-        <div v-if="showPage">
-            <div class="cover">
-                <h2 class="title">{{ project.title }}</h2>
-                <img :src="cover.url" :alt="project.title + '封面圖片'" />
-            </div>
-            <!-- 捐款人資料 -->
-            <div class="container">
-                <el-row>
-                    <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
-                        <p class="subtitle">捐款人資料</p>
-                    </el-col>
-                    <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18" class="form">
-                        <el-form label-position="top" label-width="80px" :model="form" :rules="rules" ref="donorForm">
-                            <!-- 捐款人姓名 -->
-                            <el-form-item label="捐款人姓名" prop="name">
-                                <el-input v-model="form.name" class="baseInput" />
-                            </el-form-item>
+    <client-only>
+        <div>
+            <!-- <PreviousBtn text="返回專案" :path="`/project/${route.query?.p}`" /> -->
+            <div v-if="showPage">
+                <div class="cover">
+                    <h2 class="title">{{ project.title }}</h2>
+                    <img :src="cover.url" :alt="project.title + '封面圖片'" />
+                </div>
+                <!-- 捐款人資料 -->
+                <div class="container">
+                    <el-row>
+                        <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+                            <p class="subtitle">捐款人資料</p>
+                        </el-col>
+                        <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18" class="form">
+                            <el-form
+                                label-position="top"
+                                label-width="80px"
+                                :model="form"
+                                :rules="rules"
+                                ref="donorForm"
+                            >
+                                <!-- 捐款人姓名 -->
+                                <el-form-item label="捐款人姓名" prop="name">
+                                    <el-input v-model="form.name" class="baseInput" />
+                                </el-form-item>
 
-                            <!-- 身分證字號／統一編號 -->
-                            <el-form-item label="身分證字號／統一編號" prop="idNumber">
-                                <p style="margin-top: 5px" class="comment">
-                                    需要收據的個人戶請填寫 “身分證字號” / 公司戶請填寫
-                                </p>
-                                <p style="margin-bottom: 5px" class="comment">“統一編號” / 如不需要收據請填 “無”</p>
-                                <el-input v-model="form.idNumber" class="baseInput" />
-                            </el-form-item>
-
-                            <!-- 手機號碼 -->
-                            <el-form-item label="手機號碼" prop="phone">
-                                <el-input v-model="form.phone" :max="10" class="baseInput" />
-                            </el-form-item>
-
-                            <!-- 聯絡地址 -->
-                            <el-form-item label="聯絡地址" prop="address">
-                                <p style="margin-top: 5px; margin-bottom: 5px" class="comment">
-                                    需要紙本收據請“詳填地址”
-                                </p>
-                                <div
-                                    style="
-                                        position: relative;
-                                        width: 100%;
-                                        max-width: 310px;
-                                        margin-bottom: 8px;
-                                        box-sizing: border-box;
-                                        display: flex;
-                                    "
-                                >
-                                    <select
-                                        v-model="form.city"
-                                        placeholder="縣市"
-                                        style="width: 150px; margin-right: 8px"
-                                        :data-selected="form.city"
-                                        @change="changeCity"
-                                    >
-                                        <option :value="-1" selected disabled hidden>縣市</option>
-                                        <option
-                                            v-for="(city, index) in counties"
-                                            :key="index"
-                                            :label="city"
-                                            :value="index"
-                                        >
-                                            {{ city }}
-                                        </option>
-                                    </select>
-                                    <select
-                                        v-model="form.country"
-                                        placeholder="行政區"
-                                        style="width: 150px"
-                                        :data-selected="form.country"
-                                        :disabled="form.city === -1"
-                                    >
-                                        <option :value="-1" selected disabled hidden>行政區</option>
-                                        <option
-                                            v-for="(country, index) in districtOptions"
-                                            :key="index"
-                                            :label="country"
-                                            :value="index"
-                                        >
-                                            {{ country }}
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <el-input v-model="form.address" class="addressInput" />
-                            </el-form-item>
-
-                            <!-- 電子信箱 -->
-                            <el-form-item label="電子信箱" prop="email">
-                                <p style="margin-top: 5px; margin-bottom: 5px" class="comment">
-                                    需要電子收據請“詳填電子信箱”
-                                </p>
-                                <el-input v-model="form.email" class="baseInput" />
-                            </el-form-item>
-                        </el-form>
-                    </el-col>
-                </el-row>
-            </div>
-            <Divider />
-            <!-- 捐款資料 -->
-            <div class="container" style="margin-top: 0px">
-                <el-row>
-                    <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
-                        <p class="subtitle">捐款資料</p>
-                    </el-col>
-                    <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18" class="form">
-                        <el-form label-position="top" label-width="80px" :model="form" :rules="rules" ref="baseForm">
-                            <!-- 捐款金額 -->
-                            <el-form-item label="捐款金額" prop="amount">
-                                <div class="amount">
-                                    <el-input v-model="form.amount" type="number" style="max-width: 230px" />
-                                    <span>NTD</span>
-                                </div>
-                            </el-form-item>
-                            <!-- 捐款方式 -->
-                            <el-form-item label="捐款方式" prop="donateMethod">
-                                <select
-                                    v-model="form.donateMethod"
-                                    class="donateMethod baseInput"
-                                    placeholder="請選擇捐款方式"
-                                    :data-selected="form.donateMethod"
-                                    @change="changeDonateMethod"
-                                >
-                                    <option :value="-1" selected disabled hidden>捐款方式</option>
-                                    <option
-                                        v-for="(donateMethod, index) in donateMethods"
-                                        :key="index"
-                                        :label="donateMethod.title"
-                                        :value="donateMethod.title"
-                                    >
-                                        {{ donateMethod.title }}
-                                    </option>
-                                </select>
-                            </el-form-item>
-                            <!-- 捐款方式詳述 -->
-                            <div class="donateMethodDetail" v-html="donateMethodDetail" />
-                            <!-- 是否需要開立收據 -->
-                            <el-form-item label="是否需要開立收據" prop="needReceipt">
-                                <div class="baseInput receipt">
-                                    <div
-                                        class="btn"
-                                        :class="{ selected: form.needReceipt }"
-                                        @click="form.needReceipt = true"
-                                    >
-                                        是
-                                    </div>
-                                    <div
-                                        class="btn"
-                                        :class="{ selected: !form.needReceipt }"
-                                        @click="form.needReceipt = false"
-                                    >
-                                        否
-                                    </div>
-                                </div>
-                            </el-form-item>
-                            <!-- 收據人姓名 -->
-                            <el-form-item label="收據人姓名" prop="receiptName" v-if="form.needReceipt">
-                                <el-input v-model="form.receiptName" class="baseInput" />
-                            </el-form-item>
-                            <el-form-item label="捐款日期" prop="date">
-                                <input
-                                    class="timePicker"
-                                    v-model="form.date"
-                                    type="date"
-                                    label="捐款日期"
-                                    placeholder="選擇捐款日期"
-                                />
-                            </el-form-item>
-                            <!-- 匯款帳號後五碼 -->
-                            <el-form-item label="匯款帳號後五碼" prop="note">
-                                <div style="width: 100%">
-                                    <p style="margin-top: 5px; margin-bottom: 5px" class="comment baseInput">
-                                        如捐款方式為現金，請填“無” / 若是無摺存款請提供“匯款人名稱＋帳號”
+                                <!-- 身分證字號／統一編號 -->
+                                <el-form-item label="身分證字號／統一編號" prop="idNumber">
+                                    <p style="margin-top: 5px" class="comment">
+                                        需要收據的個人戶請填寫 “身分證字號” / 公司戶請填寫
                                     </p>
-                                </div>
-                                <el-input v-model="form.note" class="baseInput" />
-                            </el-form-item>
-                            <!-- 邀請人 -->
-                            <el-form-item label="邀請人">
-                                <el-input
-                                    v-model="form.introducer"
-                                    class="baseInput"
-                                    placeholder="請填寫邀請您一起貢獻付出的人"
-                                />
-                            </el-form-item>
-                        </el-form>
+                                    <p style="margin-bottom: 5px" class="comment">“統一編號” / 如不需要收據請填 “無”</p>
+                                    <el-input v-model="form.idNumber" class="baseInput" />
+                                </el-form-item>
+
+                                <!-- 手機號碼 -->
+                                <el-form-item label="手機號碼" prop="phone">
+                                    <el-input v-model="form.phone" :max="10" class="baseInput" />
+                                </el-form-item>
+
+                                <!-- 聯絡地址 -->
+                                <!-- <el-form-item label="聯絡地址" prop="address">
+                                    <p style="margin-top: 5px; margin-bottom: 5px" class="comment">
+                                        需要紙本收據請“詳填地址”
+                                    </p>
+                                    <div
+                                        style="
+                                            position: relative;
+                                            width: 100%;
+                                            max-width: 310px;
+                                            margin-bottom: 8px;
+                                            box-sizing: border-box;
+                                            display: flex;
+                                        "
+                                    >
+                                        <select
+                                            v-model="form.city"
+                                            placeholder="縣市"
+                                            style="width: 150px; margin-right: 8px"
+                                            :data-selected="form.city"
+                                            @change="changeCity"
+                                        >
+                                            <option :value="-1" selected disabled hidden>縣市</option>
+                                            <option
+                                                v-for="(city, index) in counties"
+                                                :key="index"
+                                                :label="city"
+                                                :value="index"
+                                            >
+                                                {{ city }}
+                                            </option>
+                                        </select>
+                                        <select
+                                            v-model="form.country"
+                                            placeholder="行政區"
+                                            style="width: 150px"
+                                            :data-selected="form.country"
+                                            :disabled="form.city === -1"
+                                        >
+                                            <option :value="-1" selected disabled hidden>行政區</option>
+                                            <option
+                                                v-for="(country, index) in districtOptions"
+                                                :key="index"
+                                                :label="country"
+                                                :value="index"
+                                            >
+                                                {{ country }}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <el-input v-model="form.address" class="addressInput" />
+                                </el-form-item> -->
+
+                                <!-- 電子信箱 -->
+                                <!-- <el-form-item label="電子信箱" prop="email">
+                                    <p style="margin-top: 5px; margin-bottom: 5px" class="comment">
+                                        需要電子收據請“詳填電子信箱”
+                                    </p>
+                                    <el-input v-model="form.email" class="baseInput" />
+                                </el-form-item> -->
+                            </el-form>
+                        </el-col>
+                    </el-row>
+                </div>
+                <Divider />
+                <!-- 捐款資料 -->
+                <div class="container" style="margin-top: 0px">
+                    <el-row>
+                        <el-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+                            <p class="subtitle">捐款資料</p>
+                        </el-col>
+                        <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18" class="form">
+                            <el-form
+                                label-position="top"
+                                label-width="80px"
+                                :model="form"
+                                :rules="rules"
+                                ref="baseForm"
+                            >
+                                <!-- 捐款金額 -->
+                                <el-form-item label="捐款金額" prop="amount">
+                                    <div class="amount">
+                                        <el-input v-model="form.amount" type="number" style="max-width: 230px" />
+                                        <span>NTD</span>
+                                    </div>
+                                </el-form-item>
+                                <!-- 捐款方式 -->
+                                <el-form-item label="捐款方式" prop="donateMethod">
+                                    <select
+                                        v-model="form.donateMethod"
+                                        class="donateMethod baseInput"
+                                        placeholder="請選擇捐款方式"
+                                        :data-selected="form.donateMethod"
+                                        @change="changeDonateMethod"
+                                    >
+                                        <option :value="-1" selected disabled hidden>捐款方式</option>
+                                        <option
+                                            v-for="(donateMethod, index) in donateMethods"
+                                            :key="index"
+                                            :label="donateMethod.title"
+                                            :value="donateMethod.title"
+                                        >
+                                            {{ donateMethod.title }}
+                                        </option>
+                                    </select>
+                                </el-form-item>
+                                <!-- 捐款方式詳述 -->
+                                <div class="donateMethodDetail" v-html="donateMethodDetail" />
+                                <!-- 是否需要開立收據 -->
+                                <el-form-item label="是否需要開立收據" prop="needReceipt">
+                                    <div class="baseInput receipt">
+                                        <div
+                                            class="btn"
+                                            :class="{ selected: form.needReceipt }"
+                                            @click="form.needReceipt = true"
+                                        >
+                                            是
+                                        </div>
+                                        <div
+                                            class="btn"
+                                            :class="{ selected: !form.needReceipt }"
+                                            @click="form.needReceipt = false"
+                                        >
+                                            否
+                                        </div>
+                                    </div>
+                                </el-form-item>
+                                <!-- 收據人姓名 -->
+                                <!-- <el-form-item label="收據人姓名" prop="receiptName" v-if="form.needReceipt">
+                                    <el-input v-model="form.receiptName" class="baseInput" />
+                                </el-form-item> -->
+                                <el-form-item label="捐款日期" prop="date">
+                                    <input
+                                        class="timePicker"
+                                        v-model="form.date"
+                                        type="date"
+                                        label="捐款日期"
+                                        placeholder="選擇捐款日期"
+                                    />
+                                </el-form-item>
+                                <!-- 匯款帳號後五碼 -->
+                                <el-form-item label="匯款帳號後五碼" prop="note">
+                                    <div style="width: 100%">
+                                        <p style="margin-top: 5px; margin-bottom: 5px" class="comment baseInput">
+                                            如捐款方式為現金，請填“無” / 若是無摺存款請提供“匯款人名稱＋帳號”
+                                        </p>
+                                    </div>
+                                    <el-input v-model="form.note" class="baseInput" />
+                                </el-form-item>
+                                <!-- 邀請人 -->
+                                <el-form-item label="邀請人" prop="introducer">
+                                    <select
+                                        v-model="form.introducer"
+                                        class="donateMethod baseInput"
+                                        placeholder="請選擇邀請您一起貢獻付出的人"
+                                        :data-selected="form.introducer"
+                                        @change="changeIntroducer"
+                                    >
+                                        <option :value="-1" selected disabled hidden>
+                                            請選擇邀請您一起貢獻付出的人
+                                        </option>
+                                        <option v-for="member in members" :key="member" :label="member" :value="member">
+                                            {{ member }}
+                                        </option>
+                                    </select>
+                                </el-form-item>
+                            </el-form>
+                        </el-col>
+                    </el-row>
+                </div>
+                <!-- 按鈕區 -->
+                <el-row class="container" style="margin-top: 0px">
+                    <el-col :xs="0" :sm="0" :md="0" :lg="6" :xl="6"> </el-col>
+                    <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
+                        <div class="btnArea">
+                            <div class="btn cancel" @click="cancel()">取消</div>
+                            <div class="btn confirm" @click="confirm()">確定</div>
+                        </div>
                     </el-col>
                 </el-row>
             </div>
-            <!-- 按鈕區 -->
-            <el-row class="container" style="margin-top: 0px">
-                <el-col :xs="0" :sm="0" :md="0" :lg="6" :xl="6"> </el-col>
-                <el-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
-                    <div class="btnArea">
-                        <div class="btn cancel" @click="cancel()">取消</div>
-                        <div class="btn confirm" @click="confirm()">確定</div>
-                    </div>
-                </el-col>
-            </el-row>
+            <div v-else-if="loading" class="empty">讀取資料中...</div>
+            <div v-else class="empty">
+                <p>無此專案資料</p>
+            </div>
         </div>
-        <div v-else-if="loading" class="empty">讀取資料中...</div>
-        <div v-else class="empty">
-            <p>無此專案資料</p>
-        </div>
-    </div>
+    </client-only>
 </template>
 
 <script setup>
@@ -228,9 +251,6 @@ const notificationStore = useNotificationStore();
 const messageStore = useMessageStore();
 const { project, cover, showPage } = storeToRefs(store);
 const loading = ref(true);
-const liff = reactive({
-    api: null,
-});
 
 const lineUserId = ref('');
 const isClient = process.client;
@@ -246,7 +266,7 @@ let form = reactive({
     donateMethod: -1,
     phone: '',
     note: '',
-    introducer: '',
+    introducer: -1,
     needReceipt: true,
     receiptName: '',
     postalCode: '',
@@ -269,21 +289,26 @@ const checkDonateMethod = (rule, value, callback) => {
     typeof value !== 'number' && value !== -1 ? callback() : callback(new Error('請選擇捐款方式'));
 };
 
+const checkMember = (rule, value, callback) => {
+    typeof value !== 'number' && value !== -1 ? callback() : callback(new Error('請選擇邀請您一起貢獻付出的人'));
+};
+
 const rules = reactive({
     name: [{ required: true, message: '請輸入捐款人姓名', trigger: 'blur' }],
     idNumber: [{ required: true, message: '請輸入資料', trigger: 'blur' }],
     phone: [{ validator: checkPhoneNumber, required: true, trigger: 'blur' }],
-    address: [{ required: true, message: '請輸入地址', trigger: 'blur' }],
-    email: [
-        { required: true, message: '請輸入電子信箱', trigger: 'blur' },
-        { type: 'email', message: '請輸入電子信箱格式', trigger: ['blur', 'change'] },
-    ],
+    // address: [{ required: true, message: '請輸入地址', trigger: 'blur' }],
+    // email: [
+    //     { required: true, message: '請輸入電子信箱', trigger: 'blur' },
+    //     { type: 'email', message: '請輸入電子信箱格式', trigger: ['blur', 'change'] },
+    // ],
     amount: [{ validator: checkAmount, required: true, trigger: ['blur', 'change'] }],
     donateMethod: [{ validator: checkDonateMethod, required: true, trigger: ['blur', 'change'] }],
     needReceipt: [{ required: true, message: '請選擇是否需要開立收據', trigger: 'blur' }],
-    receiptName: [{ required: true, message: '請輸入收據人姓名', trigger: 'blur' }],
+    // receiptName: [{ required: true, message: '請輸入收據人姓名', trigger: 'blur' }],
     date: [{ required: true, message: '請選擇捐款日期', trigger: 'blur' }],
     note: [{ required: true, message: '請輸入資料', trigger: 'blur' }],
+    introducer: [{ validator: checkMember, required: true, trigger: ['blur', 'change'] }],
 });
 
 const districtOptions = computed(() => {
@@ -294,6 +319,17 @@ const districtOptions = computed(() => {
     }
 
     return [[]];
+});
+
+const members = computed(() => {
+    try {
+        return project.value.members;
+    } catch (error) {
+        return {
+            title: '轉帳',
+            desc: '',
+        };
+    }
 });
 
 const donateMethods = computed(() => {
@@ -322,8 +358,8 @@ function changeCity() {
 }
 
 function cancel() {
-    if (liff?.api?.closeWindow) {
-        liff.api.closeWindow();
+    if (liff?.closeWindow) {
+        liff.closeWindow();
     } else {
         router.push({ path: `/project?p=${route.query?.p}` });
     }
@@ -344,14 +380,14 @@ async function confirm() {
             return false;
         }
 
-        if (form.city === -1 || form.country === -1) {
-            notificationStore.addNotification({ type: 'error', message: '請選擇聯絡地址', seconds: 5 });
-            return false;
-        }
+        // if (form.city === -1 || form.country === -1) {
+        //     notificationStore.addNotification({ type: 'error', message: '請選擇聯絡地址', seconds: 5 });
+        //     return false;
+        // }
 
-        const city = counties[form.city] ? counties[form.city] : '';
-        const country = districtOptions.value[form.country] ? districtOptions.value[form.country] : '';
-        const postalCode = districts[form.city][1][form.country] ? districts[form.city][1][form.country] : '';
+        // const city = counties[form.city] ? counties[form.city] : '';
+        // const country = districtOptions.value[form.country] ? districtOptions.value[form.country] : '';
+        // const postalCode = districts[form.city][1][form.country] ? districts[form.city][1][form.country] : '';
         const time = new Date(form.date).toISOString();
 
         // 組資料
@@ -367,39 +403,32 @@ async function confirm() {
             lineUserId: lineUserId?.value,
             receipts: [
                 {
-                    name: form.receiptName,
+                    // name: form.receiptName,
                     idNumber: form.idNumber,
                     amount: Number(form.amount),
-                    email: form.email,
-                    address: {
-                        postalCode: postalCode,
-                        country: country,
-                        city: city,
-                        address: form.address,
-                    },
+                    // email: form.email,
+                    // address: {
+                    //     postalCode: postalCode,
+                    //     country: country,
+                    //     city: city,
+                    //     address: form.address,
+                    // },
                 },
             ],
         };
 
-        const { data, error } = await useFetch(`${config.public.apiBaseURL}/v1/project/${route.query?.p}/donation`, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${route.query?.t}`,
-            },
-            method: 'POST',
-            body: formData,
-        });
+        const { data, error } = await store.donate(route.query?.p, route.query?.t, formData);
 
         if (error?.value) {
-            if (liff?.api?.sendMessages) {
-                await liff.api.sendMessages([
+            if (liff?.sendMessages) {
+                await liff.sendMessages([
                     {
                         type: 'text',
                         text: `${error.value}`,
                     },
                 ]);
 
-                liff.api.closeWindow();
+                liff.closeWindow();
             } else {
                 notificationStore.addNotification({ type: 'error', message: '填寫資料失敗，請重新操作', seconds: 5 });
 
@@ -407,16 +436,16 @@ async function confirm() {
             }
         }
 
-        if (data?.value) {
-            if (liff?.api?.sendMessages) {
-                await liff.api.sendMessages([
+        if (data?.value?.message) {
+            if (liff?.sendMessages) {
+                await liff.sendMessages([
                     {
                         type: 'text',
                         text: `${data?.value?.message}`,
                     },
                 ]);
 
-                liff.api.closeWindow();
+                liff.closeWindow();
             } else {
                 notificationStore.addNotification({ type: 'success', message: `${data?.value?.message}`, seconds: 5 });
 
@@ -424,17 +453,17 @@ async function confirm() {
             }
         }
     } catch (error) {
-        console.log('API 錯誤', error);
+        console.log('程式錯誤', error);
 
-        if (liff?.api?.sendMessages) {
-            await liff.api.sendMessages([
+        if (liff?.sendMessages) {
+            await liff.sendMessages([
                 {
                     type: 'text',
                     text: `${'填寫資料失敗，請重新操作'}`,
                 },
             ]);
 
-            liff.api.closeWindow();
+            liff.closeWindow();
         } else {
             notificationStore.addNotification({ type: 'error', message: '填寫資料失敗，請重新操作', seconds: 5 });
             cancel();
@@ -444,6 +473,10 @@ async function confirm() {
 
 function changeDonateMethod() {
     console.log('changeDonateMethod');
+}
+
+function changeIntroducer() {
+    console.log('changeIntroducer');
 }
 
 async function fetchData() {
@@ -465,6 +498,12 @@ async function fetchData() {
 let lineProfile = reactive({
     result: null,
 });
+
+async function initLineLiff() {
+    await liff.init({ liffId: config.public.LIFF_ID });
+    lineProfile.result = await liff.getProfile();
+    lineUserId.value = lineProfile?.result?.userId ? lineProfile.result.userId : '';
+}
 
 // set the page SEO data to the <meta> tags
 useHead({
@@ -489,21 +528,23 @@ useHead({
         },
         { hid: 'twitter:image', property: 'twitter:image', name: 'twitter:image', content: coverImage },
     ],
+    script: [{ type: 'module', charset: 'utf-8', src: 'https://static.line-scdn.net/liff/edge/2/sdk.js' }],
 });
 
 onMounted(async () => {
     if (isClient) {
-        const script = document.createElement('script');
-        script.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
-        script.async = true;
-        script.defer = true;
-        script.onload = async () => {
-            await window.liff.init({ liffId: config.public.LIFF_ID });
-            liff.api = window.liff;
-            lineProfile.result = await liff.api.getProfile();
-            lineUserId.value = lineProfile?.result?.userId ? lineProfile.result.userId : '';
-        };
-        document.head.appendChild(script);
+        // const script = document.createElement('script');
+        // script.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
+        // script.async = true;
+        // script.defer = true;
+        // script.onload = async () => {
+        //     await window.liff.init({ liffId: config.public.LIFF_ID });
+        //     liff.api = window.liff;
+        //     lineProfile.result = await liff.api.getProfile();
+        //     lineUserId.value = lineProfile?.result?.userId ? lineProfile.result.userId : '';
+        // };
+        // document.head.appendChild(script);
+        initLineLiff();
     }
 });
 
