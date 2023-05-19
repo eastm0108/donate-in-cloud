@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div :class="{ fixedLoading: loading }">
         <NuxtLayout>
             <NuxtPage />
         </NuxtLayout>
@@ -23,5 +23,12 @@ const { loading } = storeToRefs(store);
     height: 40px;
     font-weight: bold;
     font-size: 16px;
+}
+
+.fixedLoading {
+    overflow: hidden;
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
 }
 </style>

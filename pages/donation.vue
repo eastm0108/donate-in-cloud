@@ -367,6 +367,8 @@ function cancel() {
 
 async function confirm() {
     try {
+        settings.changeLoading(true);
+
         const checkDonorForm = await donorForm.value.validate((valid) => {
             return valid;
         });
@@ -388,7 +390,7 @@ async function confirm() {
         // const city = counties[form.city] ? counties[form.city] : '';
         // const country = districtOptions.value[form.country] ? districtOptions.value[form.country] : '';
         // const postalCode = districts[form.city][1][form.country] ? districts[form.city][1][form.country] : '';
-        const time = new Date(form.date).toISOString();
+        const time = new Date(form.date).toISOString().split('T')[0] + 'T00:00:00.000+08:00';
 
         // 組資料
         const formData = {
@@ -468,6 +470,8 @@ async function confirm() {
             notificationStore.addNotification({ type: 'error', message: '填寫資料失敗，請重新操作', seconds: 5 });
             cancel();
         }
+    } finally {
+        settings.changeLoading(false);
     }
 }
 
