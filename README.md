@@ -69,3 +69,11 @@ docker run -p 3000:3000 nuxt-app
 ```
 docker-compose up
 ```
+
+## 使用 ssh 測試工具
+
+test：預設指定網址
+
+```
+ssh -R test:80:localhost:8080 serveo.net
+```
