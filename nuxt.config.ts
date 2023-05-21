@@ -5,7 +5,6 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             apiBaseURL: process.env.API_DOMAIN_URL,
-            LIFF_ID: process.env.LIFF_ID,
             HOST: process.env.HOST,
             apiServerBaseURL: 'http://apigateway:8080',
         },

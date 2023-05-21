@@ -504,7 +504,7 @@ let lineProfile = reactive({
 });
 
 async function initLineLiff() {
-    await liff.init({ liffId: config.public.LIFF_ID });
+    await liff.init({ liffId: route.query?.l });
     lineProfile.result = await liff.getProfile();
     lineUserId.value = lineProfile?.result?.userId ? lineProfile.result.userId : '';
 }
@@ -537,17 +537,6 @@ useHead({
 
 onMounted(async () => {
     if (isClient) {
-        // const script = document.createElement('script');
-        // script.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
-        // script.async = true;
-        // script.defer = true;
-        // script.onload = async () => {
-        //     await window.liff.init({ liffId: config.public.LIFF_ID });
-        //     liff.api = window.liff;
-        //     lineProfile.result = await liff.api.getProfile();
-        //     lineUserId.value = lineProfile?.result?.userId ? lineProfile.result.userId : '';
-        // };
-        // document.head.appendChild(script);
         initLineLiff();
     }
 });

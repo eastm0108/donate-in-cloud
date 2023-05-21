@@ -94,7 +94,7 @@ export const useProjectStore = defineStore('project', () => {
 
             return {
                 data: {
-                    value: { message: data?.value?.result },
+                    value: { message: data?.value?.message },
                 },
                 error: {
                     value: error?.value?.data?.message,
