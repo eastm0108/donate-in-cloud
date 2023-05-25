@@ -1,5 +1,5 @@
 # 指定基礎映像
-FROM node:16.17.0-alpine3.16
+FROM node:19-alpine3.17
 
 # 設定工作目錄
 WORKDIR /app
