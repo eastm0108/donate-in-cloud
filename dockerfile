@@ -16,9 +16,5 @@ COPY . .
 # 暴露容器的 3000 埠
 EXPOSE 3000
 
-# 運行應用程式
-# CMD [ "npm", "run", "dev" ]
-
-ENV API_DOMAIN_URL=''
-RUN npm run build
-CMD [ "npm", "run", "start" ]
+# 先 build 後 run app
+CMD ["sh","-c", "npm run build && npm run start"]

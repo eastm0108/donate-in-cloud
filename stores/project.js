@@ -82,8 +82,8 @@ export const useProjectStore = defineStore('project', () => {
         try {
             const apiServerBaseURL = config.public.HOST ? config.public.HOST : config.public.apiServerBaseURL;
             const host = typeof window !== 'undefined' ? `${window.location.origin}/api` : apiServerBaseURL;
-            const api = config.public.apiBaseURL === '' ? host : config.public.apiBaseURL;
-            const { data, error } = await useFetch(`${api}/v1/project/${projectId}/donation`, {
+
+            const { data, error } = await useFetch(`${host}/v1/project/${projectId}/donation`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
