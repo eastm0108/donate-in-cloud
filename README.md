@@ -50,10 +50,23 @@ npm run preview
 
 ## use dockerfile
 
-此命令將 Dockerfile 中定義的映像建立為名為 nuxt-app 的映像。
+此命令將 Dockerfile 中定義的映像建立為名為 donate 的 tag 為 dev 的映像。
 
 ```
-docker build -t nuxt-app .
+docker build -t donate:dev .
+```
+
+將名為 donate:dev 的本地鏡像打上一個新標籤 eastm0108/donate:dev
+
+```
+docker tag donate:dev eastm0108/donate:dev
+```
+
+將本地的鏡像推送到 Docker 鏡像倉庫的命令。
+eastm0108/donate:dev 是你要推送的鏡像的標識符，其中 eastm0108 是鏡像倉庫的名稱，donate 是鏡像的名稱，dev 是鏡像的標籤。
+
+```
+docker push eastm0108/donate:dev
 ```
 
 此命令將 nuxt-app 映像運行為一個容器，並將容器的 3000 埠映射到主機的 3000 埠。現在，他們可以在瀏覽器中訪問 http://localhost:3000，以測試 Nuxt 3 專案。
