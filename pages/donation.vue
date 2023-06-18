@@ -123,7 +123,12 @@
                                 <!-- 捐款金額 -->
                                 <el-form-item label="捐款金額" prop="amount">
                                     <div class="amount">
-                                        <el-input v-model="form.amount" type="number" style="max-width: 230px" />
+                                        <el-input
+                                            v-model="form.amount"
+                                            min="0"
+                                            type="number"
+                                            style="max-width: 230px"
+                                        />
                                         <span>NTD</span>
                                     </div>
                                 </el-form-item>
@@ -174,11 +179,13 @@
                                 </el-form-item> -->
                                 <el-form-item label="捐款日期" prop="date">
                                     <input
+                                        id="datePickerId"
                                         class="timePicker"
                                         v-model="form.date"
                                         type="date"
                                         label="捐款日期"
                                         placeholder="選擇捐款日期"
+                                        :max="datePickerLimit"
                                     />
                                 </el-form-item>
                                 <!-- 匯款帳號後五碼 -->
@@ -237,7 +244,14 @@ import { useProjectStore } from '@/stores/project';
 import { useNotificationStore } from '@/stores/notification';
 import { useMessageStore } from '@/stores/message';
 import { counties, districts } from '@/data/address';
-import { validatePhoneNumber } from '@/utils/validators';
+import {
+    isGuiNumberValid,
+    isNationalIdentificationNumberValid,
+    validatePhoneNumber,
+    validateCellphoneNumber,
+    validateChineseEnglish,
+    validateFiveNumber,
+} from '@/utils/validators';
 import { useSettingsStore } from '@/stores/settings';
 
 const settings = useSettingsStore();
@@ -277,8 +291,26 @@ let form = reactive({
     email: '',
 });
 
+let datePickerLimit = ref('');
+
+const checkChineseEnglish = (rule, value, callback) => {
+    validateChineseEnglish(value, true) ? callback() : callback(new Error('請使用中文或英文字'));
+};
+
+const checkGuiNumberValid = (rule, value, callback) => {
+    if (isGuiNumberValid(value) || isNationalIdentificationNumberValid(value)) {
+        callback();
+    } else {
+        callback(new Error('請輸入正確身分證字號或統一編號'));
+    }
+};
+
 const checkPhoneNumber = (rule, value, callback) => {
-    validatePhoneNumber(value) && value.length === 10 ? callback() : callback(new Error('請輸入正確電話號碼'));
+    if (validatePhoneNumber(value) && validateCellphoneNumber(value)) {
+        callback();
+    } else {
+        callback(new Error('請輸入正確電話號碼'));
+    }
 };
 
 const checkAmount = (rule, value, callback) => {
@@ -294,8 +326,12 @@ const checkMember = (rule, value, callback) => {
 };
 
 const rules = reactive({
-    name: [{ required: true, message: '請輸入捐款人姓名', trigger: 'blur' }],
-    idNumber: [{ required: true, message: '請輸入資料', trigger: 'blur' }],
+    name: [
+        { required: true, message: '請輸入捐款人姓名', trigger: 'blur' },
+        { required: true, message: '捐款人姓名不可低於2個字', min: 2, trigger: 'blur' },
+        { validator: checkChineseEnglish, required: true, trigger: 'blur' },
+    ],
+    idNumber: [{ validator: checkGuiNumberValid, required: true, trigger: 'blur' }],
     phone: [{ validator: checkPhoneNumber, required: true, trigger: 'blur' }],
     // address: [{ required: true, message: '請輸入地址', trigger: 'blur' }],
     // email: [
@@ -307,7 +343,7 @@ const rules = reactive({
     needReceipt: [{ required: true, message: '請選擇是否需要開立收據', trigger: 'blur' }],
     // receiptName: [{ required: true, message: '請輸入收據人姓名', trigger: 'blur' }],
     date: [{ required: true, message: '請選擇捐款日期', trigger: 'blur' }],
-    note: [{ required: true, message: '請輸入資料', trigger: 'blur' }],
+    note: [{ required: true, message: '請輸入資料', min: 1, trigger: 'blur' }],
     introducer: [{ validator: checkMember, required: true, trigger: ['blur', 'change'] }],
 });
 
@@ -483,6 +519,14 @@ function changeIntroducer() {
     console.log('changeIntroducer');
 }
 
+function setDatePickerLimit() {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+    const day = ('0' + currentDate.getDate()).slice(-2);
+    datePickerLimit = year + '-' + month + '-' + day;
+}
+
 async function fetchData() {
     try {
         loading.value = true;
@@ -539,6 +583,8 @@ onMounted(async () => {
     if (isClient) {
         initLineLiff();
     }
+
+    setDatePickerLimit();
 });
 
 if (process.server) {
